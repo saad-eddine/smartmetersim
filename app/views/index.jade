@@ -2,13 +2,14 @@ extends layout
 
 block content
     .jumbotron
-
-      h3 this simulator has two parts
-      p in the device tab you can register a device with iot hub and activate and deactivate the device
-      p in the appliances tab you can toggle on and off difference appliances that will create variances in the power consumption reported by the device
-      
-
-
-
-      
- 
+        form(action='/device', method='post', id='formb')
+          fieldset
+            .form-group.row
+              .col-sm-6
+                input.form-control(type='text', name='devID', placeholder='device identity') 
+              .col-sm-6
+                input.form-control(type='text', name='cs', placeholder='connection string') 
+                                         
+        button.btn.btn-space.btn-default(type='submit', name="action", form='formb', value='register') register
+        
+      p #{msg}

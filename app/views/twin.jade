@@ -1,0 +1,13 @@
+extends layout
+
+block content
+    .jumbotron
+        form(action='/twin', method='post', id='formtwin')
+          fieldset
+            .form-group.row
+              .col-sm-6
+                input.form-control(type='text', name='devID', placeholder=deviceId) 
+        button.btn.btn-space.btn-default(type='submit', name="action", form='formtwin', value='register') start listener
+
+    p #{msg}        
+      

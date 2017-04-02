@@ -3,6 +3,8 @@
 var express = require('express'),
     router = express.Router();
 
+var utils = require('../lib/utils');
+
 var defaults = require('../../config/appliances.js');
 
 //middleware
@@ -19,6 +21,7 @@ var deviceKey = '';
 var deviceId = '';
 var cs = '';
 var devCS = '';
+module.exports.devCS = devCS;
 
 var appliances = [false, false, false, false, false, false, false, false, false, false, false, false, false, false]
 var pwr = 0;
@@ -63,7 +66,8 @@ module.exports = function (app) {
 
 router.get('/', function (req, res, next) {
     res.render('index', {
-        title: "smart meter simulator"
+        title: "smart meter simulator",
+        msg: 'the connection string is available on the azure portal'
     });
 });
 
@@ -104,7 +108,11 @@ router.post('/device', function (req, res, next) {
                 }
             });
             var msg = "device successfully registered with IoT Hub";
-
+            res.render('device', {
+                title: "smart meter simulator",
+                deviceId: deviceId,
+                msg: msg
+            });
             break;
 
         case 'activate':
@@ -115,6 +123,9 @@ router.post('/device', function (req, res, next) {
 
             var hubName = cs.substring(cs.indexOf('=') + 1, cs.indexOf(';'));
             devCS = 'HostName=' + hubName + ';DeviceId=' + deviceId + ';SharedAccessKey=' + deviceKey;
+
+            utils.createDevice(devCS, deviceId);
+
 
             var client = clientFromConnectionString(devCS);
             client.open(function (err) {
@@ -133,7 +144,10 @@ router.post('/device', function (req, res, next) {
                 }
             });
             var msg = "device successfully connected to IoT Hub";
-
+            res.render('twin', {
+                title: "smart meter simulator",
+                deviceId: deviceId
+            });
             break;
 
         case 'deactivate':
@@ -155,17 +169,17 @@ router.post('/device', function (req, res, next) {
             });
 
             var msg = "device successfully disconnected from IoT Hub";
-
+            res.render('device', {
+                title: "smart meter simulator",
+                msg: msg
+            });
             break;
 
         default:
             console.log('cant get there form here');
     }
 
-    res.render('device', {
-        title: "smart meter simulator",
-        msg: msg
-    });
+
 });
 
 router.post('/appliances', function (req, res, next) {
