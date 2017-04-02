@@ -1,0 +1,42 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #17AEEB;
+}
+
+label {
+  color: #17AEEB;
+}
+
+h3 {
+  color: #17AEEB;
+  padding: 5px 5px 15px 5px;
+}
+
+p {
+  padding: 1px 1px 1px 20px;
+}
+
+.navbar-custom {
+    background-color:#17AEEB;
+    color:#ffffff;
+    border-radius:0;
+}
+
+.navbar-custom .navbar-nav > li > a {
+    color:#000;
+}
+.navbar-custom .navbar-nav > .active > a, .navbar-nav > .active > a:hover, .navbar-nav > .active > a:focus {
+    color:black;
+    background-color:transparent;
+}
+.navbar-custom .navbar-brand {
+    color:#eee;
+}
+
+.btn-space {
+    margin-right: 5px;
+}
