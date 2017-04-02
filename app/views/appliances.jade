@@ -1,0 +1,35 @@
+extends layout
+
+block content
+
+    .jumbotron
+      form(role='form', action="/appliances", method="post")
+        .form-group.row  
+          .col-sm-6
+            select#form.form-control(name = "appliance")
+              option(value=0) fridge
+              option(value=1) freezer
+              option(value=2) oven
+              option(value=3) stove
+              option(value=4) dishwasher
+              option(value=5) boiler
+              option(value=6) aircon
+              option(value=7) tv
+              option(value=8) stereo
+              option(value=9) pc                         
+              option(value=10) lightning living room                         
+              option(value=11) lightning bedroom                         
+              option(value=12) lightning kitchen                        
+              option(value=13) lightning bathroom                        
+              option(value=14) vacuum cleaner                         
+
+        button.btn.btn-primary(type='submit') toggle
+    
+    p #{msg}
+
+
+   
+
+
+
+
