@@ -118,9 +118,6 @@ router.post('/device', function (req, res, next) {
         case 'activate':
             console.log('activate');
 
-            //var clientFromConnectionString = require('azure-iot-device-mqtt').clientFromConnectionString;
-            //var Message = require('azure-iot-device').Message;
-
             var hubName = cs.substring(cs.indexOf('=') + 1, cs.indexOf(';'));
             devCS = 'HostName=' + hubName + ';DeviceId=' + deviceId + ';SharedAccessKey=' + deviceKey;
 
