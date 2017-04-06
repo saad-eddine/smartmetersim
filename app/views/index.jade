@@ -5,11 +5,11 @@ block content
         form(action='/device', method='post', id='formb')
           fieldset
             .form-group.row
-              .col-sm-6
+              .col-sm-4
                 input.form-control(type='text', name='devID', placeholder='device identity') 
-              .col-sm-6
+              .col-sm-8
                 input.form-control(type='text', name='cs', placeholder='iot hub connection string') 
                                          
         button.btn.btn-space.btn-default(type='submit', name="action", form='formb', value='register') register
-        
-      p #{msg}
+
+

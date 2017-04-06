@@ -2,13 +2,9 @@ extends layout
 
 block content
     .jumbotron
-        form(action='/device', method='post', id='formb')
-          fieldset
-            .form-group.row
-              .col-sm-6
-                input.form-control(type='text', name='devID', placeholder=deviceId)  
+        form(action='/device', method='post', id='formb') 
                                          
         button.btn.btn-space.btn-success(type='submit', name="action", form='formb', value='activate') activate
         button.btn.btn-space.btn-danger(type='submit', name="action", form='formb', value='deactivate') deactivate
+
         
-      p #{msg}

@@ -10,6 +10,8 @@ html(lang='en')
       link(rel='stylesheet', href='/css/style.css')
       link(href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css", rel="stylesheet")
       link(rel='stylesheet', href='/css/style.css')
+      link(rel='stylesheet', href='/css/blue-footer.css')
+
     block js
       if ENV_DEVELOPMENT
         script(src='http://localhost:35729/livereload.js')
@@ -31,12 +33,21 @@ html(lang='en')
             a( href="/device", data-tooltip='manage device' ) 
               span.glyphicon.glyphicon-modal-window              
           li 
+            a( href="/twin", data-tooltip='device properties' ) 
+              span.glyphicon.glyphicon-cog
+          li 
             a( href="/appliances", data-tooltip='manage appliances' ) 
               span.glyphicon.glyphicon-off
+        ul.nav.navbar-nav.navbar-right
+          li.ph device id
+          form.navbar-form.navbar-left(role='search')
+            .form-group
+              input.form-control(type='text', placeholder=deviceId)
 
-        
- 
-             
 
 
     block content
+    .bluefooter
+      p.pf  #{footer}
+
+

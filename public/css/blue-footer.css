@@ -1,0 +1,23 @@
+/* Sticky footer styles */
+
+
+.bluefooter {
+  height: 60px;
+  background-color: #17AEEB;
+}
+
+.ph {
+  color: white;
+  padding: 15px 0px 0px 0px;
+}
+
+.pj {
+  color: black;
+  padding: 15px 0px 0px 0px;
+}
+
+.pf {
+  color: #ffffff;
+  padding: 20px 30px 50px 80px;
+}
+

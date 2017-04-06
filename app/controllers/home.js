@@ -16,12 +16,17 @@ router.use(bodyParser.urlencoded({ extended: false }));
 var iothub = require('azure-iothub');
 var clientFromConnectionString = require('azure-iot-device-mqtt').clientFromConnectionString;
 var Message = require('azure-iot-device').Message;
+var Client = require('azure-iot-device').Client;
+//var Protocol = require('azure-iot-device-mqtt').Mqtt;
+var clientFromConnectionString = require('azure-iot-device-mqtt').clientFromConnectionString;
+var client;
 
 var deviceKey = '';
 var deviceId = '';
 var cs = '';
 var devCS = '';
-module.exports.devCS = devCS;
+var msg = '';
+var myTimer;
 
 var appliances = [false, false, false, false, false, false, false, false, false, false, false, false, false, false]
 var pwr = 0;
@@ -58,8 +63,97 @@ function resetAppliances() {
         appliances[i] = false;
 }
 
-// routing 
+// direct methods
+var onReboot = function (request, response) {
+    client = clientFromConnectionString(devCS);
+    console.log('client: ' + client);
+    // Respond the cloud app for the direct method
+    response.send(200, 'Reboot started', function (err) {
+        if (!err) {
+            console.error('An error occured when sending a method response:\n' + err.toString());
+        } else {
+            console.log('Response to method \'' + request.methodName + '\' sent successfully.');
+        }
+    });
 
+    // Report the reboot before the physical restart
+    var date = new Date();
+    var patch = {
+        iothubDM: {
+            reboot: {
+                lastReboot: date.toISOString(),
+            }
+        }
+    };
+
+    // Get device Twin
+    client.getTwin(function (err, twin) {
+        if (err) {
+            console.error('could not get twin');
+        } else {
+            console.log('twin acquired');
+            twin.properties.reported.update(patch, function (err) {
+                if (err) throw err;
+                console.log('Device reboot twin state reported')
+            });
+        }
+    });
+
+    // Add your device's reboot API for physical restart.
+    console.log('Rebooting!');
+};
+
+// twin properties
+var reportProperty = function (client, property, value) {
+    client.open(function (err) {
+        if (err) {
+            console.log('could not open IotHub client');
+        } else {
+            console.log('client opened');
+
+            client.getTwin(function (err, twin) {
+                if (err) {
+                    console.error('could not get twin');
+                } else {
+                    switch (property) {
+                        case 'connType':
+                            var patch = {
+                                connectivity: {
+                                    type: value
+                                }
+                            };
+                            break;
+                        case 'location':
+                            var patch = {
+                                location: {
+                                    zipcode: value
+                                }
+                            };
+                            break;
+                        case 'fw_version':
+                            var patch = {
+                                fw_version: {
+                                    version: value
+                                }
+                            };
+                            break;
+                    }
+
+                    twin.properties.reported.update(patch, function (err) {
+                        if (err) {
+                            console.error('could not update twin');
+                        } else {
+                            console.log('twin state reported');
+                        }
+                    });
+                }
+            });
+        }
+    });
+}
+
+
+// routing 
 module.exports = function (app) {
     app.use('/', router);
 };
@@ -67,17 +161,12 @@ module.exports = function (app) {
 router.get('/', function (req, res, next) {
     res.render('index', {
         title: "smart meter simulator",
-        msg: 'the connection string is available on the azure portal'
+        footer: 'tips: the connection string is available on the azure portal'
     });
 });
 
 router.get('/device', function (req, res, next) {
     res.render('device', {
-    });
-});
-
-router.get('/appliances', function (req, res, next) {
-    res.render('appliances', {
     });
 });
 
@@ -107,32 +196,29 @@ router.post('/device', function (req, res, next) {
 
                 }
             });
-            var msg = "device successfully registered with IoT Hub";
+            msg = "device successfully registered with IoT Hub";
             res.render('device', {
                 title: "smart meter simulator",
                 deviceId: deviceId,
-                msg: msg
+                footer: msg
             });
             break;
 
         case 'activate':
-            console.log('activate');
-
             var hubName = cs.substring(cs.indexOf('=') + 1, cs.indexOf(';'));
             devCS = 'HostName=' + hubName + ';DeviceId=' + deviceId + ';SharedAccessKey=' + deviceKey;
-
             utils.createDevice(devCS, deviceId);
-
-
-            var client = clientFromConnectionString(devCS);
+            client = clientFromConnectionString(devCS);
             client.open(function (err) {
                 if (err) {
                     console.log('Could not connect: ' + err);
                 } else {
                     console.log('Client connected');
+                    // start listeners
+                    client.onDeviceMethod('reboot', onReboot);
 
                     // Create a message and send it to the IoT Hub at interval
-                    msg = setInterval(function () {
+                    myTimer = setInterval(function () {
                         var data = JSON.stringify({ deviceId: deviceId, reading: pwr });
                         var message = new Message(data);
                         console.log("Sending message: " + message.getData());
@@ -140,10 +226,11 @@ router.post('/device', function (req, res, next) {
                     }, 60000);
                 }
             });
-            var msg = "device successfully connected to IoT Hub";
+            msg = "device successfully connected to IoT Hub";
             res.render('twin', {
                 title: "smart meter simulator",
-                deviceId: deviceId
+                deviceId: deviceId,
+                footer: 'you can now manage your device or your appliances'
             });
             break;
 
@@ -161,14 +248,14 @@ router.post('/device', function (req, res, next) {
                     console.log('Could not connect: ' + err);
                 } else {
                     console.log('Client disconnected');
-                    clearInterval(msg);
+                    clearInterval(myTimer);
                 }
             });
 
-            var msg = "device successfully disconnected from IoT Hub";
+            msg = "device successfully disconnected from IoT Hub";
             res.render('device', {
                 title: "smart meter simulator",
-                msg: msg
+                footer: msg
             });
             break;
 
@@ -179,14 +266,79 @@ router.post('/device', function (req, res, next) {
 
 });
 
+router.get('/appliances', function (req, res, next) {
+    res.render('appliances', {
+    });
+});
+
 router.post('/appliances', function (req, res, next) {
 
     var index = req.body.appliance;
     appliances[index] = !appliances[index];
-    var msg = 'toggled ' + defaults[index].type
+    msg = 'toggled ' + defaults[index].type
 
     setConsumption(index);
     res.render('appliances', {
-        msg: msg
+        footer: msg
+    });
+});
+
+
+router.get('/twin', function (req, res, next) {
+
+    var devCS = utils.getDevice().cs;
+    client = clientFromConnectionString(devCS);
+
+    client.open(function (err) {
+        if (err) {
+            console.error('Could not open IotHub client');
+            msg = 'Could not open IotHub client';
+        } else {
+            msg = "ready to manage device properties"
+        }
+        res.render('twin', {
+            title: "smart meter simulator",
+            footer: 'ready to manage device properties',
+            deviceId: utils.getDevice().id
+        });
+    })
+
+
+});
+
+router.post('/twin', function (req, res, next) {
+    var devCS = utils.getDevice().cs;
+    var id = utils.getDevice().id;
+
+    client = clientFromConnectionString(devCS);
+
+    client.open(function (err) {
+        if (err) {
+            console.error('Could not open IotHub client');
+            msg = 'Could not open IotHub client';
+        } else {
+            console.log('action: ' + req.body.action);
+            switch (req.body.action) {
+                case 'fw':
+                    msg = 'Reporting FW version: ' + req.body.fw;
+                    reportProperty(client, 'fw_version', req.body.fw);
+                    break;
+
+                case 'location':
+                    msg = 'Reporting ZipCode: ' + req.body.zipcode;
+                    reportProperty(client, 'location', req.body.zipcode);
+                    break;
+                case 'connType':
+                    msg = 'Reporting connectivity type: ' + req.body.connType;
+                    reportProperty(client, 'connType', req.body.connType);
+                    break;
+            }
+        }
+
+        res.render('twin', {
+            title: "smart meter simulator",
+            deviceId: id,
+            footer: msg
+        });
     });
 });
