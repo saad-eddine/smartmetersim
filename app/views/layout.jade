@@ -28,7 +28,10 @@ html(lang='en')
             <img src="img/brand.png" width="22" height="22" alt="brand">
 
       #navbar-inverse.collapse.navbar-collapse
-        ul.nav.navbar-nav           
+        ul.nav.navbar-nav   
+          li 
+            a( href="/", data-tooltip='start' ) 
+              span.glyphicon.glyphicon-home           
           li 
             a( href="/device", data-tooltip='manage device' ) 
               span.glyphicon.glyphicon-modal-window              

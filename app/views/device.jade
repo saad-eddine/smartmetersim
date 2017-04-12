@@ -3,8 +3,14 @@ extends layout
 block content
     .jumbotron
         form(action='/device', method='post', id='formb') 
-                                         
-        button.btn.btn-space.btn-success(type='submit', name="action", form='formb', value='activate') activate
-        button.btn.btn-space.btn-danger(type='submit', name="action", form='formb', value='deactivate') deactivate
+            .form-group.row
+                button.btn.btn-space.btn-success(type='submit', name="action", form='formb', value='activate') activate
+                button.btn.btn-space.btn-danger(type='submit', name="action", form='formb', value='deactivate') deactivate
+            .form-group.row
+                .input-group
+                    span.input-group-btn
+                        button.btn.btn-default(type='submit', name="action", form='formb', value='tele') start telemetry
+                    input.form-control(name='interval', type='text', placeholder='please enter a telemetry interval in miliseconds or leave blank to report telemetry every minute')
+
 
         

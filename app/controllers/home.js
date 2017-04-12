@@ -4,7 +4,6 @@ var express = require('express'),
     router = express.Router();
 
 var utils = require('../lib/utils');
-
 var defaults = require('../../config/appliances.js');
 
 //middleware
@@ -17,16 +16,17 @@ var iothub = require('azure-iothub');
 var clientFromConnectionString = require('azure-iot-device-mqtt').clientFromConnectionString;
 var Message = require('azure-iot-device').Message;
 var Client = require('azure-iot-device').Client;
-//var Protocol = require('azure-iot-device-mqtt').Mqtt;
+var Protocol = require('azure-iot-device-mqtt').Mqtt;
 var clientFromConnectionString = require('azure-iot-device-mqtt').clientFromConnectionString;
-var client;
 
 var deviceKey = '';
 var deviceId = '';
 var cs = '';
 var devCS = '';
+var hubName = '';
 var msg = '';
-var myTimer;
+var myTimer,
+    interval = 60000;
 
 var appliances = [false, false, false, false, false, false, false, false, false, false, false, false, false, false]
 var pwr = 0;
@@ -65,7 +65,7 @@ function resetAppliances() {
 
 // direct methods
 var onReboot = function (request, response) {
-    client = clientFromConnectionString(devCS);
+    var client = clientFromConnectionString(utils.getDevice().cs);
     console.log('client: ' + client);
     // Respond the cloud app for the direct method
     response.send(200, 'Reboot started', function (err) {
@@ -89,7 +89,7 @@ var onReboot = function (request, response) {
     // Get device Twin
     client.getTwin(function (err, twin) {
         if (err) {
-            console.error('could not get twin');
+            console.error('could not get twin: ' + JSON.stringify(err));
         } else {
             console.log('twin acquired');
             twin.properties.reported.update(patch, function (err) {
@@ -104,18 +104,31 @@ var onReboot = function (request, response) {
 };
 
 // twin properties
-var reportProperty = function (client, property, value) {
-    client.open(function (err) {
-        if (err) {
-            console.log('could not open IotHub client');
-        } else {
-            console.log('client opened');
+var reportProperty = function (property, value) {
+    var msg = '';
+    var client = Client.fromConnectionString(utils.getDevice().cs, Protocol);
 
+    client.open(function (err) {
+        if (err)
+            msg = 'could not open IotHub client';
+        else {
             client.getTwin(function (err, twin) {
+                console.log("client successfully opened!")
+
                 if (err) {
-                    console.error('could not get twin');
-                } else {
+                    msg = 'could not get twin: ' + JSON.stringify(err);
+                    console.log('could not get twin: ' + JSON.stringify(err));
+
+                }
+                else {
                     switch (property) {
+                        case 'interval':
+                            var patch = {
+                                interval: {
+                                    ms: value
+                                }
+                            };
+                            break;
                         case 'connType':
                             var patch = {
                                 connectivity: {
@@ -140,15 +153,15 @@ var reportProperty = function (client, property, value) {
                     }
 
                     twin.properties.reported.update(patch, function (err) {
-                        if (err) {
-                            console.error('could not update twin');
-                        } else {
-                            console.log('twin state reported');
-                        }
+                        if (err)
+                            msg = 'could not update twin: ' + err;
+                        else
+                            msg = 'twin state reported';
                     });
                 }
             });
         }
+        return msg;
     });
 }
 
@@ -171,7 +184,6 @@ router.get('/device', function (req, res, next) {
 });
 
 router.post('/device', function (req, res, next) {
-
     var timer = 10;
     switch (req.body.action) {
         case 'register':
@@ -205,10 +217,10 @@ router.post('/device', function (req, res, next) {
             break;
 
         case 'activate':
-            var hubName = cs.substring(cs.indexOf('=') + 1, cs.indexOf(';'));
+            hubName = cs.substring(cs.indexOf('=') + 1, cs.indexOf(';'));
             devCS = 'HostName=' + hubName + ';DeviceId=' + deviceId + ';SharedAccessKey=' + deviceKey;
             utils.createDevice(devCS, deviceId);
-            client = clientFromConnectionString(devCS);
+            var client = clientFromConnectionString(devCS);
             client.open(function (err) {
                 if (err) {
                     console.log('Could not connect: ' + err);
@@ -216,6 +228,30 @@ router.post('/device', function (req, res, next) {
                     console.log('Client connected');
                     // start listeners
                     client.onDeviceMethod('reboot', onReboot);
+                }
+            });
+            msg = "device successfully connected to IoT Hub";
+            res.render('device', {
+                title: "smart meter simulator",
+                deviceId: deviceId,
+                footer: msg
+            });
+            break;
+
+        case 'tele':
+            client = clientFromConnectionString(devCS);
+
+            console.log('TELEMETRY: ' + client)
+
+            client.open(function (err) {
+                if (err) {
+                    console.log('Could not connect: ' + err);
+                } else {
+                    if (req.body.interval != '')
+                        interval = req.body.interval;
+                    console.log('starting telemetry at ' + interval + ' ms interval')
+                    msg = reportProperty('interval', interval);
+                    console.log('reported: ' + interval)
 
                     // Create a message and send it to the IoT Hub at interval
                     myTimer = setInterval(function () {
@@ -226,19 +262,18 @@ router.post('/device', function (req, res, next) {
                     }, 60000);
                 }
             });
-            msg = "device successfully connected to IoT Hub";
-            res.render('twin', {
+            msg = 'telemetry started. interval: ' + interval;
+            res.render('device', {
                 title: "smart meter simulator",
                 deviceId: deviceId,
-                footer: 'you can now manage your device or your appliances'
+                footer: msg
             });
             break;
+
 
         case 'deactivate':
             console.log('deactivate');
             resetAppliances();
-
-
 
             devCS = 'HostName=' + hubName + ';DeviceId=' + deviceId + ';SharedAccessKey=' + deviceKey;
             var client = clientFromConnectionString(devCS);
@@ -285,60 +320,31 @@ router.post('/appliances', function (req, res, next) {
 
 
 router.get('/twin', function (req, res, next) {
-
-    var devCS = utils.getDevice().cs;
-    client = clientFromConnectionString(devCS);
-
-    client.open(function (err) {
-        if (err) {
-            console.error('Could not open IotHub client');
-            msg = 'Could not open IotHub client';
-        } else {
-            msg = "ready to manage device properties"
-        }
-        res.render('twin', {
-            title: "smart meter simulator",
-            footer: 'ready to manage device properties',
-            deviceId: utils.getDevice().id
-        });
-    })
+    res.render('twin', {
+        title: "smart meter simulator",
+        footer: 'ready to manage device properties',
+        deviceId: deviceId
+    });
 
 
 });
 
 router.post('/twin', function (req, res, next) {
-    var devCS = utils.getDevice().cs;
-    var id = utils.getDevice().id;
+    switch (req.body.action) {
+        case 'fw':
+            msg = reportProperty('fw_version', req.body.fw);
+            break;
+        case 'location':
+            msg = reportProperty('location', req.body.zipcode);
+            break;
+        case 'connType':
+            msg = reportProperty('connType', req.body.connType);
+            break;
+    }
 
-    client = clientFromConnectionString(devCS);
-
-    client.open(function (err) {
-        if (err) {
-            console.error('Could not open IotHub client');
-            msg = 'Could not open IotHub client';
-        } else {
-            console.log('action: ' + req.body.action);
-            switch (req.body.action) {
-                case 'fw':
-                    msg = 'Reporting FW version: ' + req.body.fw;
-                    reportProperty(client, 'fw_version', req.body.fw);
-                    break;
-
-                case 'location':
-                    msg = 'Reporting ZipCode: ' + req.body.zipcode;
-                    reportProperty(client, 'location', req.body.zipcode);
-                    break;
-                case 'connType':
-                    msg = 'Reporting connectivity type: ' + req.body.connType;
-                    reportProperty(client, 'connType', req.body.connType);
-                    break;
-            }
-        }
-
-        res.render('twin', {
-            title: "smart meter simulator",
-            deviceId: id,
-            footer: msg
-        });
+    res.render('twin', {
+        title: "smart meter simulator",
+        deviceId: deviceId,
+        footer: msg
     });
 });

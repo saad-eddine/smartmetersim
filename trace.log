@@ -1,0 +1,108 @@
+2017-04-11T12:52:00.459Z: *******************************************
+2017-04-11T12:52:00.461Z: * Executing the Microsoft IOT Trace tool. *
+2017-04-11T12:52:00.461Z: *******************************************
+2017-04-11T12:52:00.462Z: 
+2017-04-11T12:52:00.462Z: --- Executing network tests ---
+2017-04-11T12:52:00.499Z: 
+2017-04-11T12:52:00.499Z: Starting DNS resolution for host 'www.microsoft.com'...
+2017-04-11T12:52:00.592Z: --> Successfully resolved DNS to 23.14.9.230.
+2017-04-11T12:52:00.593Z: "www.microsoft.com" using address: 23.14.9.230
+2017-04-11T12:52:00.593Z: 
+2017-04-11T12:52:00.593Z: Pinging IPV4 address '23.14.9.230'...
+2017-04-11T12:52:00.747Z: --> Successfully pinged 23.14.9.230
+2017-04-11T12:52:00.748Z: 
+2017-04-11T12:52:00.748Z: Sending https request to 'https://www.microsoft.com/'
+2017-04-11T12:52:01.235Z: --> Completed https request
+2017-04-11T12:52:01.236Z: 
+2017-04-11T12:52:01.236Z: --- Executing IOT Hub tests ---
+2017-04-11T12:52:01.237Z: Unable to parse the connection string, verify correctness: ArgumentError: The connection string is missing the property: SharedAccessKeyName
+2017-04-11T12:52:26.811Z: *******************************************
+2017-04-11T12:52:26.812Z: * Executing the Microsoft IOT Trace tool. *
+2017-04-11T12:52:26.812Z: *******************************************
+2017-04-11T12:52:26.813Z: 
+2017-04-11T12:52:26.813Z: --- Executing network tests ---
+2017-04-11T12:52:26.843Z: 
+2017-04-11T12:52:26.843Z: Starting DNS resolution for host 'www.microsoft.com'...
+2017-04-11T12:52:26.988Z: --> Successfully resolved DNS to 23.14.9.230.
+2017-04-11T12:52:26.988Z: "www.microsoft.com" using address: 23.14.9.230
+2017-04-11T12:52:26.988Z: 
+2017-04-11T12:52:26.988Z: Pinging IPV4 address '23.14.9.230'...
+2017-04-11T12:52:27.016Z: --> Successfully pinged 23.14.9.230
+2017-04-11T12:52:27.017Z: 
+2017-04-11T12:52:27.017Z: Sending https request to 'https://www.microsoft.com/'
+2017-04-11T12:52:34.927Z: --> Completed https request
+2017-04-11T12:52:34.928Z: 
+2017-04-11T12:52:34.928Z: --- Executing IOT Hub tests ---
+2017-04-11T12:52:37.939Z: 
+2017-04-11T12:52:37.939Z: Starting AMQP Test...
+2017-04-11T12:52:38.606Z: Client connected, sending message
+2017-04-11T12:52:41.914Z: Service successfully received telemetry from client.
+2017-04-11T12:52:41.933Z: Telemetry sent, status: MessageEnqueued
+2017-04-11T12:52:42.142Z: Command sent, status = MessageEnqueued
+2017-04-11T12:52:42.343Z: --> Successfully ran AMQP test.
+2017-04-11T12:52:42.344Z: 
+2017-04-11T12:52:42.344Z: Starting AMQP-WS Test...
+2017-04-11T12:52:44.277Z: Client connected, sending message
+2017-04-11T12:52:47.516Z: Service successfully received telemetry from client.
+2017-04-11T12:52:47.551Z: Telemetry sent, status: MessageEnqueued
+2017-04-11T12:52:47.739Z: Command sent, status = MessageEnqueued
+2017-04-11T12:52:47.912Z: --> Successfully ran AMQP-WS test.
+2017-04-11T12:52:47.928Z: 
+2017-04-11T12:52:47.928Z: Starting HTTPS Test...
+2017-04-11T12:52:47.929Z: Client connected, sending message
+2017-04-11T12:52:51.419Z: Service successfully received telemetry from client.
+2017-04-11T12:52:51.421Z: Telemetry sent, status: MessageEnqueued
+2017-04-11T12:52:51.532Z: Command sent, status = MessageEnqueued
+2017-04-11T12:52:52.528Z: --> Successfully ran HTTPS test.
+2017-04-11T12:52:52.566Z: 
+2017-04-11T12:52:52.566Z: Starting Mqtt Test...
+2017-04-11T12:52:52.950Z: Client connected, sending message
+2017-04-11T12:52:56.159Z: Telemetry sent, status: MessageEnqueued
+2017-04-11T12:52:56.161Z: Service successfully received telemetry from client.
+2017-04-11T12:52:56.306Z: Command sent, status = MessageEnqueued
+2017-04-11T12:52:56.766Z: --> Successfully ran Mqtt test.
+2017-04-12T06:16:58.641Z: *******************************************
+2017-04-12T06:16:58.644Z: * Executing the Microsoft IOT Trace tool. *
+2017-04-12T06:16:58.644Z: *******************************************
+2017-04-12T06:16:58.646Z: 
+2017-04-12T06:16:58.646Z: --- Executing network tests ---
+2017-04-12T06:16:58.692Z: 
+2017-04-12T06:16:58.692Z: Starting DNS resolution for host 'www.microsoft.com'...
+2017-04-12T06:16:58.734Z: --> Successfully resolved DNS to 104.122.237.146.
+2017-04-12T06:16:58.734Z: "www.microsoft.com" using address: 104.122.237.146
+2017-04-12T06:16:58.735Z: 
+2017-04-12T06:16:58.735Z: Pinging IPV4 address '104.122.237.146'...
+2017-04-12T06:16:58.761Z: --> Successfully pinged 104.122.237.146
+2017-04-12T06:16:58.761Z: 
+2017-04-12T06:16:58.761Z: Sending https request to 'https://www.microsoft.com/'
+2017-04-12T06:16:58.851Z: --> Completed https request
+2017-04-12T06:16:58.852Z: 
+2017-04-12T06:16:58.852Z: --- Executing IOT Hub tests ---
+2017-04-12T06:17:02.036Z: 
+2017-04-12T06:17:02.036Z: Starting AMQP Test...
+2017-04-12T06:17:04.873Z: Client connected, sending message
+2017-04-12T06:17:08.169Z: Service successfully received telemetry from client.
+2017-04-12T06:17:08.203Z: Telemetry sent, status: MessageEnqueued
+2017-04-12T06:17:08.460Z: Command sent, status = MessageEnqueued
+2017-04-12T06:17:08.674Z: --> Successfully ran AMQP test.
+2017-04-12T06:17:08.675Z: 
+2017-04-12T06:17:08.675Z: Starting AMQP-WS Test...
+2017-04-12T06:17:09.494Z: Client connected, sending message
+2017-04-12T06:17:12.733Z: Service successfully received telemetry from client.
+2017-04-12T06:17:12.785Z: Telemetry sent, status: MessageEnqueued
+2017-04-12T06:17:12.938Z: Command sent, status = MessageEnqueued
+2017-04-12T06:17:13.080Z: --> Successfully ran AMQP-WS test.
+2017-04-12T06:17:13.093Z: 
+2017-04-12T06:17:13.093Z: Starting HTTPS Test...
+2017-04-12T06:17:13.094Z: Client connected, sending message
+2017-04-12T06:17:16.927Z: Telemetry sent, status: MessageEnqueued
+2017-04-12T06:17:16.929Z: Service successfully received telemetry from client.
+2017-04-12T06:17:17.093Z: Command sent, status = MessageEnqueued
+2017-04-12T06:17:18.059Z: --> Successfully ran HTTPS test.
+2017-04-12T06:17:18.091Z: 
+2017-04-12T06:17:18.092Z: Starting Mqtt Test...
+2017-04-12T06:17:18.588Z: Client connected, sending message
+2017-04-12T06:17:21.783Z: Service successfully received telemetry from client.
+2017-04-12T06:17:21.784Z: Telemetry sent, status: MessageEnqueued
+2017-04-12T06:17:21.915Z: Command sent, status = MessageEnqueued
+2017-04-12T06:17:22.012Z: --> Successfully ran Mqtt test.
