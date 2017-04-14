@@ -1,16 +1,22 @@
 extends layout
 
 block content
-    .jumbotron
-        form(action='/device', method='post', id='formb') 
-            .form-group.row
-                button.btn.btn-space.btn-success(type='submit', name="action", form='formb', value='activate') activate
-                button.btn.btn-space.btn-danger(type='submit', name="action", form='formb', value='deactivate') deactivate
-            .form-group.row
-                .input-group
-                    span.input-group-btn
-                        button.btn.btn-default(type='submit', name="action", form='formb', value='tele') start telemetry
-                    input.form-control(name='interval', type='text', placeholder='please enter a telemetry interval in miliseconds or leave blank to report telemetry every minute')
+        .panel.panel-default
+            .panel-heading Device Registration
+            .panel-body        
+                 
+                form(action='/device', method='post', id='formb')
+                    fieldset
+                        .form-group.row
+                            .col-sm-1
+                                button.btn.btn-space.btn-success(type='submit', name="action", form='formb', value='activate') activate
+                            .col-sm-1
+                                button.btn.btn-space.btn-danger(type='submit', name="action", form='formb', value='deactivate') deactivate
+                        .form-group.row
+                            .col-sm-4
+                                input.form-control(type='text', name='interval', placeholder='telemetry interval in ms (default 60000)') 
+                            .col-sm-4
+                                button.btn.btn-space.btn-primary(type='submit', name="action", form='formb', value='tele') start telemetry
 
 
         

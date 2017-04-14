@@ -1,15 +1,17 @@
 extends layout
 
 block content
-    .jumbotron
-        form(action='/device', method='post', id='formb')
-          fieldset
-            .form-group.row
-              .col-sm-4
-                input.form-control(type='text', name='devID', placeholder='device identity') 
-              .col-sm-8
-                input.form-control(type='text', name='cs', placeholder='iot hub connection string') 
+        .panel.panel-default
+            .panel-heading Device Connectivity Management
+            .panel-body        
+              form(action='/device', method='post', id='formb')
+                fieldset
+                  .form-group.row
+                    .col-sm-4
+                      input.form-control(type='text', name='devID', placeholder='device identity') 
+                    .col-sm-8
+                      input.form-control(type='text', name='cs', placeholder='iot hub connection string') 
                                          
-        button.btn.btn-space.btn-default(type='submit', name="action", form='formb', value='register') register
+              button.btn.btn-space.btn-primary(type='submit', name="action", form='formb', value='register') register
 
 

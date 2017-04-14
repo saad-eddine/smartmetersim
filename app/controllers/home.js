@@ -4,7 +4,6 @@ var express = require('express'),
     router = express.Router();
 
 var utils = require('../lib/utils');
-var defaults = require('../../config/appliances.js');
 
 //middleware
 var bodyParser = require('body-parser');
@@ -21,15 +20,10 @@ var clientFromConnectionString = require('azure-iot-device-mqtt').clientFromConn
 
 var deviceKey = '';
 var deviceId = '';
-var cs = '';
-var devCS = '';
-var hubName = '';
+var cs = '', devCS = '', hubName = '';
 var msg = '';
 var myTimer,
     interval = 60000;
-
-var appliances = [false, false, false, false, false, false, false, false, false, false, false, false, false, false]
-var pwr = 0;
 
 // auxiliary functions
 function printResultFor(op) {
@@ -44,23 +38,7 @@ function printDeviceInfo(err, deviceInfo, res) {
         console.log('Device ID: ' + deviceInfo.deviceId);
         console.log('Device key: ' + deviceInfo.authentication.symmetricKey.primaryKey);
         deviceKey = deviceInfo.authentication.symmetricKey.primaryKey;
-
     }
-}
-
-function setConsumption(index) {
-    if (appliances[index])
-        pwr += defaults[index].wattph
-    else
-        pwr -= defaults[index].wattph
-
-    console.log('new power consumption: ' + pwr);
-}
-
-function resetAppliances() {
-    pwr = 0;
-    for (var i = 0; i < appliances.length; i++)
-        appliances[i] = false;
 }
 
 // direct methods
@@ -198,15 +176,11 @@ router.post('/device', function (req, res, next) {
             deviceId = req.body.devID;
             device.deviceId = req.body.devID;
             registry.create(device, function (err, deviceInfo, res) {
-
-                if (err) {
+                if (err)
                     registry.get(device.deviceId, printDeviceInfo);
 
-                }
-                if (deviceInfo) {
+                if (deviceInfo)
                     printDeviceInfo(err, deviceInfo, res);
-
-                }
             });
             msg = "device successfully registered with IoT Hub";
             res.render('device', {
@@ -240,29 +214,23 @@ router.post('/device', function (req, res, next) {
 
         case 'tele':
             client = clientFromConnectionString(devCS);
-
-            console.log('TELEMETRY: ' + client)
+            if (req.body.interval != '')
+                interval = req.body.interval;
 
             client.open(function (err) {
                 if (err) {
-                    console.log('Could not connect: ' + err);
+                    msg = 'Could not connect: ' + err;
                 } else {
-                    if (req.body.interval != '')
-                        interval = req.body.interval;
-                    console.log('starting telemetry at ' + interval + ' ms interval')
-                    msg = reportProperty('interval', interval);
-                    console.log('reported: ' + interval)
-
                     // Create a message and send it to the IoT Hub at interval
                     myTimer = setInterval(function () {
-                        var data = JSON.stringify({ deviceId: deviceId, reading: pwr });
+                        var data = JSON.stringify({ deviceId: deviceId, reading: utils.getConsumption() });
                         var message = new Message(data);
-                        console.log("Sending message: " + message.getData());
                         client.sendEvent(message, printResultFor('send'));
-                    }, 60000);
+                    }, interval);
                 }
-            });
-            msg = 'telemetry started. interval: ' + interval;
+            })
+            msg = 'starting telemetry at ' + interval + ' ms interval';
+
             res.render('device', {
                 title: "smart meter simulator",
                 deviceId: deviceId,
@@ -270,10 +238,9 @@ router.post('/device', function (req, res, next) {
             });
             break;
 
-
         case 'deactivate':
             console.log('deactivate');
-            resetAppliances();
+            resetHome();
 
             devCS = 'HostName=' + hubName + ';DeviceId=' + deviceId + ';SharedAccessKey=' + deviceKey;
             var client = clientFromConnectionString(devCS);
@@ -286,38 +253,42 @@ router.post('/device', function (req, res, next) {
                     clearInterval(myTimer);
                 }
             });
-
             msg = "device successfully disconnected from IoT Hub";
             res.render('device', {
                 title: "smart meter simulator",
                 footer: msg
             });
             break;
-
         default:
             console.log('cant get there form here');
     }
-
-
 });
 
 router.get('/appliances', function (req, res, next) {
     res.render('appliances', {
+        title: "smart meter simulator",
+        appliances: utils.getAppliances(),
+        deviceId: deviceId
     });
 });
 
 router.post('/appliances', function (req, res, next) {
+    if (Object.keys(req.body).length == 0) {
+        utils.resetHouse();
+        msg = 'no energy consumption'
+    }
+    else {
+        var pwr = utils.setAppliances(req.body);
+        msg = 'consumption per minute: ' + pwr + ' watts/min'
+    }
 
-    var index = req.body.appliance;
-    appliances[index] = !appliances[index];
-    msg = 'toggled ' + defaults[index].type
-
-    setConsumption(index);
     res.render('appliances', {
-        footer: msg
+        title: "smart meter simulator",
+        footer: msg,
+        appliances: req.body,
+        deviceId: deviceId
     });
 });
-
 
 router.get('/twin', function (req, res, next) {
     res.render('twin', {
@@ -325,8 +296,6 @@ router.get('/twin', function (req, res, next) {
         footer: 'ready to manage device properties',
         deviceId: deviceId
     });
-
-
 });
 
 router.post('/twin', function (req, res, next) {

@@ -1,35 +1,123 @@
 extends layout
 
 block content
+        .panel.panel-default
+            .panel-heading Control Appliances
+            .panel-body  
+                form(action='/appliances', method='post', id='formb')
+                    fieldset
+                        .col-sm-2
+                            .checkbox                        
+                                if appliances.fridge == "on"
+                                    input(type='checkbox', name='fridge', checked) 
+                                    | fridge
+                                else
+                                    input(type='checkbox', name='fridge') 
+                                    | fridge
 
-    .jumbotron
-      form(role='form', action="/appliances", method="post")
-        .form-group.row  
-          .col-sm-6
-            select#form.form-control(name = "appliance")
-              option(value=0) fridge
-              option(value=1) freezer
-              option(value=2) oven
-              option(value=3) stove
-              option(value=4) dishwasher
-              option(value=5) boiler
-              option(value=6) aircon
-              option(value=7) tv
-              option(value=8) stereo
-              option(value=9) pc                         
-              option(value=10) lightning living room                         
-              option(value=11) lightning bedroom                         
-              option(value=12) lightning kitchen                        
-              option(value=13) lightning bathroom                        
-              option(value=14) vacuum cleaner                         
+                            .checkbox
+                                if appliances.freezer == "on"
+                                    input(type='checkbox', name='freezer', checked) 
+                                    | freezer
+                                else
+                                    input(type='checkbox', name='freezer') 
+                                    | freezer
+                            .checkbox
+                                if appliances.oven == "on"
+                                    input(type='checkbox', name='oven', checked) 
+                                    | oven
+                                else
+                                    input(type='checkbox', name='oven') 
+                                    | oven
+                            .checkbox
+                                if appliances.stove == "on"
+                                    input(type='checkbox', name='stove', checked) 
+                                    | stove
+                                else
+                                    input(type='checkbox', name='stove') 
+                                    | stove
+                        .col-sm-2
+                            .checkbox
+                                if appliances.dishwasher == "on"
+                                    input(type='checkbox', name='dishwasher', checked) 
+                                    | dishwasher
+                                else
+                                    input(type='checkbox', name='dishwasher') 
+                                    | dishwasher
+                            .checkbox
+                                if appliances.boiler == "on"
+                                    input(type='checkbox', name='boiler', checked) 
+                                    | boiler
+                                else
+                                    input(type='checkbox', name='boiler') 
+                                    | boiler
+                            .checkbox
+                                if appliances.aircon == "on"
+                                    input(type='checkbox', name='aircon', checked) 
+                                    | aircon
+                                else
+                                    input(type='checkbox', name='aircon') 
+                                    | aircon
+                            .checkbox
+                                if appliances.tv == "on"
+                                    input(type='checkbox', name='tv', checked) 
+                                    | tv
+                                else
+                                    input(type='checkbox', name='tv') 
+                                    | tv
+                        .col-sm-2
+                            .checkbox
+                                if appliances.stereo == "on"
+                                    input(type='checkbox', name='stereo', checked) 
+                                    | stereo
+                                else
+                                    input(type='checkbox', name='stereo') 
+                                    | stereo
+                            .checkbox
+                                if appliances.pc == "on"
+                                    input(type='checkbox', name='pc', checked) 
+                                    | pc
+                                else
+                                    input(type='checkbox', name='pc') 
+                                    | pc
+                            .checkbox
+                                if appliances.llr == "on"
+                                    input(type='checkbox', name='llr', checked) 
+                                    | light living-room
+                                else
+                                    input(type='checkbox', name='llr') 
+                                    | light living-room
+                            .checkbox
+                                if appliances.lbr == "on"
+                                    input(type='checkbox', name='lbr', checked) 
+                                    | light bedroom
+                                else
+                                    input(type='checkbox', name='lbr') 
+                                    | light bedroom
+                        .col-sm-2
+                            .checkbox
+                                if appliances.lk == "on"
+                                    input(type='checkbox', name='lk', checked) 
+                                    | light kitchen
+                                else
+                                    input(type='checkbox', name='lk') 
+                                    | light kitchen
+                            .checkbox
+                                if appliances.lb == "on"
+                                    input(type='checkbox', name='lb', checked) 
+                                    | light bathroom
+                                else
+                                    input(type='checkbox', name='lb') 
+                                    | light bathroom
+                            .checkbox
+                                if appliances.hoover == "on"
+                                    input(type='checkbox', name='hoover', checked) 
+                                    | hoover
+                                else
+                                    input(type='checkbox', name='lb') 
+                                    | hoover
+            .panel-body
+                button.btn.btn-space.btn-primary(type='submit', form='formb') set
 
-        button.btn.btn-primary(type='submit') toggle
-    
-    p #{msg}
 
-
-   
-
-
-
-
+        

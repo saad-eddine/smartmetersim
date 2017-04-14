@@ -1,28 +1,31 @@
 extends layout
 
 block content
-    .jumbotron
-        form(id='formtwin', action='/twin', method='post')
-          fieldset
-            .form-group.row
-              .col-sm-4
-                .input-group
-                  span.input-group-btn
-                    button.btn.btn-default(name="action", type='submit', form='formtwin', value='fw') submit
-                  input.form-control(name="fw", type='text', placeholder='firmware version')
-              .col-sm-4
-                .input-group
-                  span.input-group-btn
-                    button.btn.btn-default(name="action", type='submit', form='formtwin', value='location') submit
-                  input.form-control(name='zipcode', type='text', placeholder='zipcode')
-              .col-sm-4
-                .input-group
-                  span.input-group-btn
-                    button.btn.btn-default(name="action", type='submit', form='formtwin', value='connType') submit
-                  select#form.form-control(name = "connType")
-                      option(value='') connectivity type
-                      option(value='cellular') cellular
-                      option(value='wifi') wifi
-                      option(value='fixed') fixed 
+        .panel.panel-default
+            .panel-heading Device Properties
+            .panel-body   
+
+                form(id='formtwin', action='/twin', method='post')
+                    fieldset
+                        .form-group.row
+                            .col-sm-4
+                                .input-group
+                                    span.input-group-btn
+                                        button.btn.btn-primary(name="action", type='submit', form='formtwin', value='fw') submit
+                                    input.form-control(name="fw", type='text', placeholder='firmware version')
+                            .col-sm-4
+                                .input-group
+                                    span.input-group-btn
+                                        button.btn.btn-primary(name="action", type='submit', form='formtwin', value='location') submit
+                                    input.form-control(name='zipcode', type='text', placeholder='zipcode')
+                            .col-sm-4
+                                .input-group
+                                    span.input-group-btn
+                                        button.btn.btn-primary(name="action", type='submit', form='formtwin', value='connType') submit
+                                    select#form.form-control(name = "connType")
+                                        option(value='') connectivity type
+                                        option(value='cellular') cellular
+                                        option(value='wifi') wifi
+                                        option(value='fixed') fixed 
    
       

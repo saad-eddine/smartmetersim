@@ -3,21 +3,18 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
-a {
-  color: #17AEEB;
-}
 
-label {
-  color: #17AEEB;
+.checkboxes label {
+  display: block;
+  float: left;
+  padding-right: 30px;
+  white-space: nowrap;
 }
-
-h3 {
-  color: #17AEEB;
-  padding: 5px 5px 15px 5px;
+.checkboxes input {
+  vertical-align: middle;
 }
-
-p {
-  padding: 1px 1px 1px 20px;
+.checkboxes label span {
+  vertical-align: middle;
 }
 
 .navbar-custom {
