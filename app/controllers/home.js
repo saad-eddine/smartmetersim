@@ -240,7 +240,7 @@ router.post('/device', function (req, res, next) {
 
         case 'deactivate':
             console.log('deactivate');
-            resetHome();
+            utils.resetHome();
 
             devCS = 'HostName=' + hubName + ';DeviceId=' + deviceId + ';SharedAccessKey=' + deviceKey;
             var client = clientFromConnectionString(devCS);
