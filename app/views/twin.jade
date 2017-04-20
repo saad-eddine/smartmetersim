@@ -9,16 +9,19 @@ block content
                     fieldset
                         .form-group.row
                             .col-sm-4
+                                label FW Version
                                 .input-group
                                     span.input-group-btn
                                         button.btn.btn-primary(name="action", type='submit', form='formtwin', value='fw') submit
-                                    input.form-control(name="fw", type='text', placeholder='firmware version')
+                                    input.form-control(name="fw", type='text', placeholder=version)
                             .col-sm-4
+                                label zip code
                                 .input-group
                                     span.input-group-btn
                                         button.btn.btn-primary(name="action", type='submit', form='formtwin', value='location') submit
-                                    input.form-control(name='zipcode', type='text', placeholder='zipcode')
+                                    input.form-control(name='zipcode', type='text', placeholder=location)
                             .col-sm-4
+                                label connectivity type
                                 .input-group
                                     span.input-group-btn
                                         button.btn.btn-primary(name="action", type='submit', form='formtwin', value='connType') submit

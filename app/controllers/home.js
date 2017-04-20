@@ -22,6 +22,8 @@ var deviceKey = '';
 var deviceId = '';
 var cs = '', devCS = '', hubName = '';
 var msg = '';
+var version = 'not set';
+var location = 'not set';
 var myTimer,
     interval = 60000;
 
@@ -42,11 +44,11 @@ function printDeviceInfo(err, deviceInfo, res) {
 }
 
 // direct methods
-var onReboot = function (request, response) {
+var onBlock = function (request, response) {
     var client = clientFromConnectionString(utils.getDevice().cs);
     console.log('client: ' + client);
     // Respond the cloud app for the direct method
-    response.send(200, 'Reboot started', function (err) {
+    response.send(200, 'Electricity supply is now blocked', function (err) {
         if (!err) {
             console.error('An error occured when sending a method response:\n' + err.toString());
         } else {
@@ -54,12 +56,12 @@ var onReboot = function (request, response) {
         }
     });
 
-    // Report the reboot before the physical restart
+    // Report the block 
     var date = new Date();
     var patch = {
         iothubDM: {
-            reboot: {
-                lastReboot: date.toISOString(),
+            block: {
+                lastBlock: date.toISOString(),
             }
         }
     };
@@ -72,13 +74,13 @@ var onReboot = function (request, response) {
             console.log('twin acquired');
             twin.properties.reported.update(patch, function (err) {
                 if (err) throw err;
-                console.log('Device reboot twin state reported')
+                console.log('Device twin state reported')
             });
         }
     });
 
-    // Add your device's reboot API for physical restart.
-    console.log('Rebooting!');
+    // Block API for physical restart.
+    console.log('Blocking!');
 };
 
 // twin properties
@@ -201,7 +203,7 @@ router.post('/device', function (req, res, next) {
                 } else {
                     console.log('Client connected');
                     // start listeners
-                    client.onDeviceMethod('reboot', onReboot);
+                    client.onDeviceMethod('block', onBlock);
                 }
             });
             msg = "device successfully connected to IoT Hub";
@@ -216,11 +218,13 @@ router.post('/device', function (req, res, next) {
             client = clientFromConnectionString(devCS);
             if (req.body.interval != '')
                 interval = req.body.interval;
+            reportProperty('interval', interval)
 
             client.open(function (err) {
                 if (err) {
                     msg = 'Could not connect: ' + err;
                 } else {
+                    
                     // Create a message and send it to the IoT Hub at interval
                     myTimer = setInterval(function () {
                         var data = JSON.stringify({ deviceId: deviceId, reading: utils.getConsumption() });
@@ -294,17 +298,21 @@ router.get('/twin', function (req, res, next) {
     res.render('twin', {
         title: "smart meter simulator",
         footer: 'ready to manage device properties',
-        deviceId: deviceId
+        deviceId: deviceId,
+        location: location,
+        version: version
     });
 });
 
 router.post('/twin', function (req, res, next) {
     switch (req.body.action) {
         case 'fw':
-            msg = reportProperty('fw_version', req.body.fw);
+            version = req.body.fw;
+            msg = reportProperty('fw_version', version);
             break;
         case 'location':
-            msg = reportProperty('location', req.body.zipcode);
+        location = req.body.zipcode;
+            msg = reportProperty('location', location);
             break;
         case 'connType':
             msg = reportProperty('connType', req.body.connType);
@@ -314,6 +322,8 @@ router.post('/twin', function (req, res, next) {
     res.render('twin', {
         title: "smart meter simulator",
         deviceId: deviceId,
-        footer: msg
+        footer: msg,
+        location: location,
+        version: version
     });
 });
