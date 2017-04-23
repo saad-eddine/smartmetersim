@@ -83,6 +83,11 @@ var onBlock = function (request, response) {
     console.log('Blocking!');
 };
 
+var onRelease = function (request, response) {
+
+    // do something here
+    console.log('releasing...')
+}
 // twin properties
 var reportProperty = function (property, value) {
     var msg = '';
@@ -201,9 +206,12 @@ router.post('/device', function (req, res, next) {
                 if (err) {
                     console.log('Could not connect: ' + err);
                 } else {
-                    console.log('Client connected');
                     // start listeners
                     client.onDeviceMethod('block', onBlock);
+                    client.onDeviceMethod('release', onRelease);
+                    console.log('Listeners started');
+
+
                 }
             });
             msg = "device successfully connected to IoT Hub";
@@ -224,7 +232,7 @@ router.post('/device', function (req, res, next) {
                 if (err) {
                     msg = 'Could not connect: ' + err;
                 } else {
-                    
+
                     // Create a message and send it to the IoT Hub at interval
                     myTimer = setInterval(function () {
                         var data = JSON.stringify({ deviceId: deviceId, reading: utils.getConsumption() });
@@ -311,7 +319,7 @@ router.post('/twin', function (req, res, next) {
             msg = reportProperty('fw_version', version);
             break;
         case 'location':
-        location = req.body.zipcode;
+            location = req.body.zipcode;
             msg = reportProperty('location', location);
             break;
         case 'connType':
