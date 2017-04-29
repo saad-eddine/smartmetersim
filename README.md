@@ -7,8 +7,7 @@ You will develop:
 ### System Architecture
 
 ADD DIAGRAM
-![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
-
+![alt text](https://github.com/lucarv/img/smartmeterlab.png "Logo Title Text 1")
 
 ### Language choice
 You will be writing code, but the choice of language is yours.
