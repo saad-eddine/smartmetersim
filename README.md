@@ -6,7 +6,7 @@ You will develop:
 
 ### System Architecture
 
-![alt text](https://github.com/lucarv/smartmetersim/img/smartmeterlab.png "architecture")
+![alt text](https://github.com/lucarv/smartmetersim/tree/master/img/smartmeterlab.png "architecture")
 
 ### Language choice
 You will be writing code, but the choice of language is yours.
