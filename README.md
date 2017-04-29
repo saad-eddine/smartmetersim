@@ -18,7 +18,7 @@ You will be writing code, but the choice of language is yours.
 
 This repo contains a finalized version of the smart meter simulator based written in node.js
 
-*[Agent Console Example - can be found in this link](http://github.com/lucarv/agentconsole)* 
+Agent Console Example - can be found*[ here](http://github.com/lucarv/agentconsole)* 
 
 We will be using the [Azure IoT Hub SDK](https://github.com/Azure/azure-iot-sdks)'s to simplify development
 
