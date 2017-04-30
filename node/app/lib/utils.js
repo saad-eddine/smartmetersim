@@ -1,6 +1,6 @@
 Device = require('../models/device');
-var appliances = require('../../appliances.js').appliances;
-var defaults = require('../../appliances.js').defaults;
+var appliances = require('../../config/appliances.js').appliances;
+var defaults = require('../../config/appliances.js').defaults;
 
 var device;
 
