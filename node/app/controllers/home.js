@@ -26,6 +26,7 @@ var version = 'not set';
 var location = 'not set';
 var myTimer,
     interval = 60000;
+var watt = 0;
 
 // auxiliary functions
 function printResultFor(op) {
@@ -235,9 +236,16 @@ router.post('/device', function (req, res, next) {
 
                     // Create a message and send it to the IoT Hub at interval
                     myTimer = setInterval(function () {
-                        var data = JSON.stringify({ deviceId: deviceId, reading: utils.getConsumption() });
-                        var message = new Message(data);
-                        client.sendEvent(message, printResultFor('send'));
+                        var reading = utils.getConsumption();
+
+                        if (reading != watt) {
+                            var data = JSON.stringify({ deviceId: deviceId, reading: reading});
+                            var message = new Message(data);
+                            client.sendEvent(message, printResultFor('send'));
+                            watt = reading;
+                        }
+                        else
+                            console.log('watt: ' + watt);
                     }, interval);
                 }
             })
@@ -290,7 +298,7 @@ router.post('/appliances', function (req, res, next) {
         msg = 'no energy consumption'
     }
     else {
-        var pwr = utils.setAppliances(req.body);
+        var pwr = utils.setConsumption(req.body);
         msg = 'consumption per minute: ' + pwr + ' watts/min'
     }
 
