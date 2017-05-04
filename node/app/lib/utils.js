@@ -20,13 +20,18 @@ function getDevice() {
 function resetHouse() {
     appliances = allOff;
 }
+
 function getAppliances() {
     return appliances
 }
+
 function setConsumption(appls) {
     pwr = 0;
-    for (var appl in appls) 
-        pwr += + defaults[appl];
+    resetHouse();
+    for (var appl in appls) {
+        pwr += defaults[appl];
+        appliances[appl] = "on"
+    }
     return pwr;
 }
 
