@@ -27,6 +27,7 @@ var location = 'not set';
 var myTimer,
     interval = 60000;
 var watt = 0;
+var msgType = '';
 
 // auxiliary functions
 function printResultFor(op) {
@@ -216,42 +217,7 @@ router.post('/device', function (req, res, next) {
                 }
             });
             msg = "device successfully connected to IoT Hub";
-            res.render('device', {
-                title: "smart meter simulator",
-                deviceId: deviceId,
-                footer: msg
-            });
-            break;
-
-        case 'tele':
-            client = clientFromConnectionString(devCS);
-            if (req.body.interval != '')
-                interval = req.body.interval;
-            reportProperty('interval', interval)
-
-            client.open(function (err) {
-                if (err) {
-                    msg = 'Could not connect: ' + err;
-                } else {
-
-                    // Create a message and send it to the IoT Hub at interval
-                    myTimer = setInterval(function () {
-                        var reading = utils.getConsumption();
-
-                        if (reading != watt) {
-                            var data = JSON.stringify({ deviceId: deviceId, reading: reading});
-                            var message = new Message(data);
-                            client.sendEvent(message, printResultFor('send'));
-                            watt = reading;
-                        }
-                        else
-                            console.log('watt: ' + watt);
-                    }, interval);
-                }
-            })
-            msg = 'starting telemetry at ' + interval + ' ms interval';
-
-            res.render('device', {
+            res.render('messaging', {
                 title: "smart meter simulator",
                 deviceId: deviceId,
                 footer: msg
@@ -260,7 +226,7 @@ router.post('/device', function (req, res, next) {
 
         case 'deactivate':
             console.log('deactivate');
-            utils.resetHome();
+            utils.resetHouse();
 
             devCS = 'HostName=' + hubName + ';DeviceId=' + deviceId + ';SharedAccessKey=' + deviceKey;
             var client = clientFromConnectionString(devCS);
@@ -284,6 +250,65 @@ router.post('/device', function (req, res, next) {
     }
 });
 
+router.get('/msg', function (req, res, next) {
+    res.render('messaging', {
+        title: "smart meter simulator",
+        deviceId: deviceId
+    });
+});
+
+router.post('/msg', function (req, res, next) {
+    //var timer = 10;
+
+    switch (req.body.action) {
+        case 'on':
+            var client = clientFromConnectionString(devCS);
+            if (req.body.interval != '')
+                interval = req.body.interval;
+            reportProperty('interval', interval);
+
+            client.open(function (err) {
+                if (err) {
+                    msg = 'Could not connect: ' + err;
+                } else {
+
+                    // Create a message and send it to the IoT Hub at interval
+                    myTimer = setInterval(function () {
+                        var reading = utils.getConsumption();
+                        var data = JSON.stringify({ deviceId: deviceId, reading: reading });
+                        var message = new Message(data);
+
+                        if (req.body.msgType == 'delta') {
+                            if (reading != watt) {
+                                client.sendEvent(message, printResultFor('send'));
+                                watt = reading;
+                            } else
+                                console.log('skip mesaging as no changes');
+                        } else
+                            client.sendEvent(message, printResultFor('send'));
+                    }, interval);
+                }
+            })
+            msg = 'starting telemetry at ' + interval + ' ms interval';
+
+            res.render('appliances', {
+                title: "smart meter simulator",
+                deviceId: deviceId,
+                appliances: utils.getAppliances(),
+                footer: msg
+            });
+            break;
+        case 'off':
+            clearInterval(myTimer);
+            res.render('messaging', {
+                title: "smart meter simulator",
+                deviceId: deviceId,
+                footer: 'telemetry stopped'
+            });
+            break;
+    }
+})
+
 router.get('/appliances', function (req, res, next) {
     res.render('appliances', {
         title: "smart meter simulator",
@@ -296,8 +321,7 @@ router.post('/appliances', function (req, res, next) {
     if (Object.keys(req.body).length == 0) {
         utils.resetHouse();
         msg = 'no energy consumption'
-    }
-    else {
+    } else {
         var pwr = utils.setConsumption(req.body);
         msg = 'consumption per minute: ' + pwr + ' watts/min'
     }

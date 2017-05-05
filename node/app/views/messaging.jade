@@ -1,0 +1,22 @@
+extends layout
+
+block content
+        .panel.panel-default
+            .panel-heading Device Telemetry
+            .panel-body        
+                 
+                form(action='/msg', method='post', id='formb')
+                    fieldset
+                        .form-group.row
+                            .col-sm-4
+                                input.form-control(type='text', name='interval', placeholder='telemetry interval in ms (default 60000)') 
+                            .col-sm-3
+                                    .input-group
+                                    select#form.form-control(name = "msgType")
+                                        option(value='') choose messaging type
+                                        option(value='stream') stream    
+                                        option(value='delta') delta    
+                            .col-sm-1
+                                button.btn.btn-space.btn-success(type='submit', form='formb', name='action', value='on') start tele                                                                   
+                            .col-sm-1
+                                button.btn.btn-danger(type='submit', form='formb', name='action', value='off') stop tele                                                                                                   

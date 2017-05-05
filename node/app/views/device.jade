@@ -2,7 +2,7 @@ extends layout
 
 block content
         .panel.panel-default
-            .panel-heading Device Registration
+            .panel-heading Device Control
             .panel-body        
                  
                 form(action='/device', method='post', id='formb')
@@ -12,11 +12,6 @@ block content
                                 button.btn.btn-space.btn-success(type='submit', name="action", form='formb', value='activate') activate
                             .col-sm-1
                                 button.btn.btn-space.btn-danger(type='submit', name="action", form='formb', value='deactivate') deactivate
-                        .form-group.row
-                            .col-sm-4
-                                input.form-control(type='text', name='interval', placeholder='telemetry interval in ms (default 60000)') 
-                            .col-sm-4
-                                button.btn.btn-space.btn-primary(type='submit', name="action", form='formb', value='tele') start telemetry
 
 
         
