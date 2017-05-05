@@ -1,8 +1,14 @@
 
-You will develop:
- * A simulated Smart Meter sensor
+Using Azure IoT components, You will develop:
+ * A simulated Smart Meter device
  * A device management agent tool
  * Hot path data analysis with a real-time dashboard 
+
+Before start, You should create a resource group in Azure with at least:
+    * An IoT Hub
+    * A Storage account to save your telemetry messages
+    * A Stream Analytics job to grab telemetry messages form the IoT Hub and saving in a blob container in your Storage Account
+
 
 ### System Architecture
 
