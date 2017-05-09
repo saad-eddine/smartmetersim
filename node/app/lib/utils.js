@@ -3,7 +3,7 @@ var appliances = require('../../config/appliances.js').appliances;
 var defaults = require('../../config/appliances.js').defaults;
 
 var device;
-
+var applon = [];
 
 var allOff = appliances;
 var pwr = 0;
@@ -30,13 +30,15 @@ function setConsumption(appls) {
     resetHouse();
     for (var appl in appls) {
         pwr += defaults[appl];
-        appliances[appl] = "on"
+        appliances[appl] = "on",
+        applon.push(appl)
     }
     return pwr;
 }
 
 function getConsumption() {
-    return pwr;
+    var reading = { "pwr": pwr, "appls": applon };
+    return reading;
 }
 
 module.exports.createDevice = createDevice;

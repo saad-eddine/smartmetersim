@@ -11,9 +11,9 @@ html(lang='en')
       link(rel='stylesheet', href='/css/style.css')
       link(rel='stylesheet', href='/css/blue-footer.css')
 
-
-
     block js
+      script(type='text/javascript', src='https://www.gstatic.com/charts/loader.js')
+  
       if ENV_DEVELOPMENT
         script(src='http://localhost:35729/livereload.js')
   body
@@ -39,6 +39,7 @@ html(lang='en')
           li 
             a( href="/appliances", data-tooltip='manage appliances' ) 
               span.glyphicon.glyphicon-off  
+
 
         ul.nav.navbar-nav.navbar-right      
           li.ph device id

@@ -275,7 +275,9 @@ router.post('/msg', function (req, res, next) {
                     // Create a message and send it to the IoT Hub at interval
                     myTimer = setInterval(function () {
                         var reading = utils.getConsumption();
-                        var data = JSON.stringify({ deviceId: deviceId, reading: reading });
+                        var data = JSON.stringify({ deviceId: deviceId, timestamp: Date.now(), consumption: reading.pwr, appliances: reading.appls});
+                        //console.log('payload: ' + data);
+                        
                         var message = new Message(data);
 
                         if (req.body.msgType == 'delta') {
@@ -367,3 +369,4 @@ router.post('/twin', function (req, res, next) {
         version: version
     });
 });
+
