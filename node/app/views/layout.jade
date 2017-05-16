@@ -32,27 +32,29 @@ html(lang='en')
         ul.nav.navbar-nav   
           li 
             a( href="/", data-tooltip='register device' ) 
-              span.glyphicon.glyphicon-home                         
+              span.glyphicon.glyphicon-home    
+          li 
+            a( href="/device", data-tooltip='control device' ) 
+              span.glyphicon.glyphicon-modal-window                                          
           li 
             a( href="/msg", data-tooltip='telemetry' ) 
-              span.glyphicon.glyphicon-cloud-upload          
-          li 
-            a( href="/appliances", data-tooltip='manage appliances' ) 
-              span.glyphicon.glyphicon-off  
+              span.glyphicon.glyphicon-cloud-upload                 
+          li           
+            a( href="/twin", data-tooltip='device properties' ) 
+              span.glyphicon.glyphicon-wrench                
 
 
         ul.nav.navbar-nav.navbar-right      
           li.ph device id
           form.navbar-form.navbar-left(role='search')
             .form-group
-              input.form-control(type='text', placeholder=deviceId)
+              input.form-control(type='text', placeholder=deviceId)           
           li 
-            a( href="/device", data-tooltip='control device' ) 
-              span.glyphicon.glyphicon-modal-window              
-          li           
-            a( href="/twin", data-tooltip='device properties' ) 
-              span.glyphicon.glyphicon-wrench              
-
+            a( href="/appliances", data-tooltip='register appliances' ) 
+              span.glyphicon.glyphicon-plus          
+          li 
+            a( href="/house", data-tooltip='turn on/off appliances' ) 
+              span.glyphicon.glyphicon-off     
 
 
     block content

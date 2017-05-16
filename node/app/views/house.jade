@@ -1,0 +1,30 @@
+extends layout
+
+block content
+        .panel.panel-default
+            .panel-heading Control Appliances
+            .panel-body  
+                form(action='/house', method='post', id='formb')
+                    fieldset
+                        table.table.table-bordered
+                            thead
+                            tr
+                                th Appliance
+                                th Consumption (kilowatts/min)
+                                th State  
+                                th Toggle                                                                       
+                            tbody
+                            each appl in appls
+                                tr
+                                td= appl.name
+                                td= appl.kwm
+                                td= appl.state
+                                td 
+                                    .checkbox                        
+                                        input(type='checkbox', name=appl.name) 
+            .panel-body
+                button.btn.btn-space.btn-primary(type='submit', form='formb') apply                                    
+
+
+        
+                        

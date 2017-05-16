@@ -2,8 +2,8 @@
 
 var express = require('express'),
     router = express.Router();
-
 var utils = require('../lib/utils');
+Device = require('../models/device');
 
 //middleware
 var bodyParser = require('body-parser');
@@ -28,6 +28,7 @@ var myTimer,
     interval = 60000;
 var watt = 0;
 var msgType = '';
+var appliancesArray = [];
 
 // auxiliary functions
 function printResultFor(op) {
@@ -39,8 +40,6 @@ function printResultFor(op) {
 
 function printDeviceInfo(err, deviceInfo, res) {
     if (deviceInfo) {
-        console.log('Device ID: ' + deviceInfo.deviceId);
-        console.log('Device key: ' + deviceInfo.authentication.symmetricKey.primaryKey);
         deviceKey = deviceInfo.authentication.symmetricKey.primaryKey;
     }
 }
@@ -93,7 +92,7 @@ var onRelease = function (request, response) {
 // twin properties
 var reportProperty = function (property, value) {
     var msg = '';
-    var client = Client.fromConnectionString(utils.getDevice().cs, Protocol);
+    var client = Client.fromConnectionString(devCS, Protocol);
 
     client.open(function (err) {
         if (err)
@@ -153,9 +152,9 @@ var reportProperty = function (property, value) {
 }
 
 
-// routing 
+// ROUTING
 module.exports = function (app) {
-    app.use('/', router);
+    app.use('/', router)
 };
 
 router.get('/', function (req, res, next) {
@@ -174,7 +173,6 @@ router.post('/device', function (req, res, next) {
     var timer = 10;
     switch (req.body.action) {
         case 'register':
-            console.log('register');
 
             cs = req.body.cs;
             var registry = iothub.Registry.fromConnectionString(cs);
@@ -184,10 +182,14 @@ router.post('/device', function (req, res, next) {
             var device = new iothub.Device(null);
             deviceId = req.body.devID;
             device.deviceId = req.body.devID;
+            devCS = req.body.cs;
+
+            // populate model
+            utils.setDevice(deviceId, devCS);
+
             registry.create(device, function (err, deviceInfo, res) {
                 if (err)
                     registry.get(device.deviceId, printDeviceInfo);
-
                 if (deviceInfo)
                     printDeviceInfo(err, deviceInfo, res);
             });
@@ -199,10 +201,11 @@ router.post('/device', function (req, res, next) {
             });
             break;
 
+
         case 'activate':
             hubName = cs.substring(cs.indexOf('=') + 1, cs.indexOf(';'));
             devCS = 'HostName=' + hubName + ';DeviceId=' + deviceId + ';SharedAccessKey=' + deviceKey;
-            utils.createDevice(devCS, deviceId);
+
             var client = clientFromConnectionString(devCS);
             client.open(function (err) {
                 if (err) {
@@ -211,8 +214,6 @@ router.post('/device', function (req, res, next) {
                     // start listeners
                     client.onDeviceMethod('block', onBlock);
                     client.onDeviceMethod('release', onRelease);
-                    console.log('Listeners started');
-
 
                 }
             });
@@ -260,6 +261,7 @@ router.get('/msg', function (req, res, next) {
 router.post('/msg', function (req, res, next) {
     //var timer = 10;
 
+
     switch (req.body.action) {
         case 'on':
             var client = clientFromConnectionString(devCS);
@@ -275,9 +277,7 @@ router.post('/msg', function (req, res, next) {
                     // Create a message and send it to the IoT Hub at interval
                     myTimer = setInterval(function () {
                         var reading = utils.getConsumption();
-                        var data = JSON.stringify({ deviceId: deviceId, timestamp: Date.now(), consumption: reading.pwr, appliances: reading.appls});
-                        //console.log('payload: ' + data);
-                        
+                        var data = JSON.stringify({ deviceId: deviceId, timestamp: Date.now(), consumption: reading.pwr, appliances: reading.appls });
                         var message = new Message(data);
 
                         if (req.body.msgType == 'delta') {
@@ -293,10 +293,9 @@ router.post('/msg', function (req, res, next) {
             })
             msg = 'starting telemetry at ' + interval + ' ms interval';
 
-            res.render('appliances', {
+            res.render('messaging', {
                 title: "smart meter simulator",
                 deviceId: deviceId,
-                appliances: utils.getAppliances(),
                 footer: msg
             });
             break;
@@ -309,32 +308,51 @@ router.post('/msg', function (req, res, next) {
             });
             break;
     }
-})
 
-router.get('/appliances', function (req, res, next) {
-    res.render('appliances', {
+})
+/*
+router.get('/appreg', function (req, res, next) {
+    res.render('appreg', {
         title: "smart meter simulator",
-        appliances: utils.getAppliances(),
         deviceId: deviceId
     });
 });
 
-router.post('/appliances', function (req, res, next) {
-    if (Object.keys(req.body).length == 0) {
-        utils.resetHouse();
-        msg = 'no energy consumption'
-    } else {
-        var pwr = utils.setConsumption(req.body);
-        msg = 'consumption per minute: ' + pwr + ' watts/min'
+router.post('/appreg', function (req, res, next) {
+    console.log('adding: ' + req.body.name);
+    var applObj = {};
+    applObj.name = req.body.name;
+    applObj.kwm = req.body.kwm;
+
+    appliancesArray.push(applObj)
+    
+    console.log('array: ' + JSON.stringify(appliancesArray));
+    
+    
+    res.render('appreg', {
+        title: "smart meter simulator",
+        deviceId: deviceId
+    });
+});
+*/
+router.get('/appliances', function (req, res, next) {
+
+    var appliances = utils.getAppliances();
+    var index;
+    var appl = [];
+    console.log(appliances.length)
+    for (index = 0; index < appliances.length; index++) {
+        appl[index] = appliances[index].name
     }
 
     res.render('appliances', {
         title: "smart meter simulator",
-        footer: msg,
-        appliances: req.body,
+        appls: appl,
         deviceId: deviceId
     });
 });
+
+
 
 router.get('/twin', function (req, res, next) {
     res.render('twin', {

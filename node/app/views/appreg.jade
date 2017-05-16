@@ -1,0 +1,33 @@
+extends layout
+
+
+block content
+        .panel.panel-default
+            .panel-heading New Appliance
+            .panel-body        
+              form(action='/appliances', method='post', id='formb')
+                fieldset
+                  .form-group.row
+                    .col-sm-4
+                      input.form-control(type='text', name='name', placeholder='appliance name') 
+                    .col-sm-4
+                      input.form-control(type='text', name='kwm', placeholder='appliance consumption') 
+                    .col-sm-4
+                      button.btn.btn-space.btn-primary(type='submit', name="action", form='formb', value='register') register
+        .panel.panel-default
+            .panel-heading Currently Registered
+            .panel-body   
+              table.table.table-bordered
+                thead
+                  tr
+                    th Appliance
+                    th Consumption (kilowatts/min)
+                    th State
+                    
+                tbody
+                  each appl in appls
+                    tr
+                      td= appl.name
+                      td= appl.kwm
+                      td= appl.state
+                      
