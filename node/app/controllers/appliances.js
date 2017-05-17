@@ -21,7 +21,8 @@ router.get('/house', function (req, res, next) {
 
     res.render('house', {
         title: "smart meter simulator",
-        appls: appliancesArray
+        appls: appliancesArray,
+        deviceId: utils.getDevice().id
     });
 });
 
@@ -58,7 +59,8 @@ router.get('/appliances', function (req, res, next) {
 
     res.render('appreg', {
         title: "smart meter simulator",
-        appls: appliancesArray
+        appls: appliancesArray,
+        deviceId: utils.getDevice().id
     });
 });
 
@@ -72,7 +74,7 @@ router.post('/appliances', function (req, res, next) {
     utils.setAppliances(appliancesArray);
     res.render('appreg', {
         title: "smart meter simulator",
-        deviceId: 'nada',
+        deviceId: utils.getDevice().id,
         appls: appliancesArray
     });
 });

@@ -1,9 +1,10 @@
 // Example model
 
 
-function Device (id, cs) {
+function Device(id, cs) {
   this.id = id;
   this.cs = cs;
+  this.key = '';
   this.appliances = []
 }
 
@@ -11,8 +12,16 @@ Device.prototype.getDeviceId = function () {
   return this.id
 }
 
-Device.prototype.getonnectionString = function () {
+Device.prototype.getConnectionString = function () {
   return this.cs
+}
+
+Device.prototype.setDeviceConnectionString = function (devcs) {
+  this.devcs = devcs;
+}
+
+Device.prototype.getDevConnectionString = function () {
+  return this.devcs;
 }
 
 Device.prototype.setAppliances = function (appl) {

@@ -12,6 +12,10 @@ function setDevice(id, cs) {
     device = new Device(id, cs);
 }
 
+function setDeviceKey(key) {
+    device.key = key;
+}
+
 function getDevice() {
     return device;
 }
@@ -47,6 +51,7 @@ function getConsumption() {
 }
 
 module.exports.setDevice = setDevice;
+module.exports.setDeviceKey = setDeviceKey;
 module.exports.getDevice = getDevice;
 
 module.exports.getConsumption = getConsumption;
