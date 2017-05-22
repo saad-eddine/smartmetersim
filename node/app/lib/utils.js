@@ -47,7 +47,6 @@ function getAppliances() {
 
 function setAppliances(appl) {
     device.appliances = appl;
-    console.log(device.appliances)
     fs.writeFile('./config/appl.json', JSON.stringify(appl), function (err) {
         if (err)
             return console.log(err);

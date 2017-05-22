@@ -56,11 +56,6 @@ router.post('/house', function (req, res, next) {
 router.get('/appliances', function (req, res, next) {
     var appliancesArray = utils.getAppliances();
 
-        console.log('GET APPL')
-        console.log(appliancesArray)  
-                console.log(appliancesArray.length)    
-  
-
     res.render('appreg', {
         title: "smart meter simulator",
         appls: appliancesArray,
@@ -75,10 +70,6 @@ router.post('/appliances', function (req, res, next) {
     applObj.state = 'off';
     var appliancesArray = utils.getAppliances();
 
-        console.log('POST APPL')
-        console.log(appliancesArray)  
-                console.log(appliancesArray.length)    
-         
     appliancesArray.push(applObj);
 
     utils.setAppliances(appliancesArray);

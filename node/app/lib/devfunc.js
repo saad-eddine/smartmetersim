@@ -60,7 +60,6 @@ var updateTwin = function (property, value) {
     switch (property) {
         case 'appl':
             var appArray = utils.getAppliances()
-            console.log(appArray)
             var patch = {
                 tags: {
                     appliances: {
@@ -115,8 +114,6 @@ var writeTag = function (patch) {
         if (err) {
             console.error(err.constructor.name + ': ' + err.message);
         } else {
-            console.log('PATCH')
-            console.log(patch)
             twin.update(patch, function (err) {
                 if (err)
                     console.log('could not update twin: ' + err);
