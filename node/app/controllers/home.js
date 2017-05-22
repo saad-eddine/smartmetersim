@@ -3,6 +3,8 @@
 var express = require('express'),
     router = express.Router();
 var utils = require('../lib/utils');
+var devfunc = require('../lib/devfunc');
+
 var Device = require('../models/device');
 
 var smtwin = require('./smtwin.js');
@@ -111,10 +113,14 @@ router.post('/msg', function (req, res, next) {
 
     switch (req.body.action) {
         case 'on':
+            var device = utils.getDevice();
+            hubName = device.cs.substring(device.cs.indexOf('=') + 1, device.cs.indexOf(';'));
+            devCS = 'HostName=' + hubName + ';DeviceId=' + device.id + ';SharedAccessKey=' + device.key;       
+            
             var client = clientFromConnectionString(devCS);
             if (req.body.interval != '')
                 interval = req.body.interval;
-            reportProperty('interval', interval);
+            devfunc.updateTwin('interval', interval);
 
             client.open(function (err) {
                 if (err) {

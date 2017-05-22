@@ -16,7 +16,7 @@ module.exports = function (app) {
 };
 
 router.get('/house', function (req, res, next) {
-    appliancesArray = utils.getAppliances();
+    var appliancesArray = utils.getAppliances();
 
     res.render('house', {
         title: "smart meter simulator",
@@ -27,7 +27,7 @@ router.get('/house', function (req, res, next) {
 
 router.post('/house', function (req, res, next) {
     var keys = [];
-    appliancesArray = utils.getAppliances();
+    var appliancesArray = utils.getAppliances();
 
     for (var k in req.body) 
         keys.push(k);
@@ -42,7 +42,7 @@ router.post('/house', function (req, res, next) {
             }
         }
     }
-
+    utils.setAppliances(appliancesArray)
     var pwr = utils.getConsumption().pwr;
     var msg = 'consumption per minute: ' + pwr + ' watts/min'
 

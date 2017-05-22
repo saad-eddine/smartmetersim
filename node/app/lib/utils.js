@@ -23,11 +23,7 @@ function setDevice(id, cs) {
         if (appl !== '')
             var appliances = JSON.parse(appl);
 
-            console.log('APPLIANCES')
-            console.log(appliances.length)
-
         device.appliances = appliances;
-
     });
 }
 
@@ -61,13 +57,12 @@ function setAppliances(appl) {
 
 function getConsumption() {
     pwr = 0;
-    resetHouse();
+    // resetHouse();
 
     for (var i = 0; i < device.appliances.length; i++) {
-        console.log(device.appliances[i])
         if (device.appliances[i].state == 'on') {
             pwr += Number(device.appliances[i].kwm);
-            applon.push(device.appliances[i].name)
+            //applon.push(device.appliances[i].name)
         }
     }
 
