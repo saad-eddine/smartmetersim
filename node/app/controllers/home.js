@@ -3,7 +3,7 @@
 var express = require('express'),
     router = express.Router();
 var utils = require('../lib/utils');
-Device = require('../models/device');
+var Device = require('../models/device');
 
 var smtwin = require('./smtwin.js');
 

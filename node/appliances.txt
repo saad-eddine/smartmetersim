@@ -1,0 +1,1 @@
+[{"name":"pc","kwm":"1","state":"off"},{"name":"tv","kwm":"2","state":"off"}]

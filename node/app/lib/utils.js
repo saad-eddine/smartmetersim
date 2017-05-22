@@ -1,5 +1,8 @@
-Device = require('../models/device');
+'use strict';
+
+var Device = require('../models/device');
 var devfunc = require('./devfunc');
+var fs = require('fs');
 
 var device;
 var applon = [];
@@ -9,6 +12,23 @@ var pwr = 0;
 
 function setDevice(id, cs) {
     device = new Device(id, cs);
+    var appl = [];
+
+    // the code below should be elsewhere, in here due to laziness
+    // reading the apliances list from file when starting
+    fs.readFile('./config/appl.json', 'utf8', function (err, appl) {
+        if (err) {
+            return console.log(err);
+        }
+        if (appl !== '')
+            var appliances = JSON.parse(appl);
+
+            console.log('APPLIANCES')
+            console.log(appliances.length)
+
+        device.appliances = appliances;
+
+    });
 }
 
 function setDeviceKey(key) {
@@ -31,8 +51,12 @@ function getAppliances() {
 
 function setAppliances(appl) {
     device.appliances = appl;
-    devfunc.updateTwin('appl');
-
+    console.log(device.appliances)
+    fs.writeFile('./config/appl.json', JSON.stringify(appl), function (err) {
+        if (err)
+            return console.log(err);
+        console.log('written');
+    });
 }
 
 function getConsumption() {

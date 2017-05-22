@@ -2,9 +2,8 @@
 
 var express = require('express'),
     router = express.Router();
+    
 var utils = require('../lib/utils');
-
-var appliancesArray = [];
 
 //middleware
 var bodyParser = require('body-parser');
@@ -55,7 +54,12 @@ router.post('/house', function (req, res, next) {
 });
 
 router.get('/appliances', function (req, res, next) {
-    appliancesArray = utils.getAppliances();
+    var appliancesArray = utils.getAppliances();
+
+        console.log('GET APPL')
+        console.log(appliancesArray)  
+                console.log(appliancesArray.length)    
+  
 
     res.render('appreg', {
         title: "smart meter simulator",
@@ -69,6 +73,12 @@ router.post('/appliances', function (req, res, next) {
     applObj.name = req.body.name;
     applObj.kwm = req.body.kwm;
     applObj.state = 'off';
+    var appliancesArray = utils.getAppliances();
+
+        console.log('POST APPL')
+        console.log(appliancesArray)  
+                console.log(appliancesArray.length)    
+         
     appliancesArray.push(applObj);
 
     utils.setAppliances(appliancesArray);
