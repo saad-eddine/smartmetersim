@@ -1,11 +1,10 @@
 Device = require('../models/device');
-var appliances = require('../../config/appliances.js').appliances;
-var defaults = require('../../config/appliances.js').defaults;
+var devfunc = require('./devfunc');
 
 var device;
 var applon = [];
 
-var allOff = appliances;
+
 var pwr = 0;
 
 function setDevice(id, cs) {
@@ -31,7 +30,9 @@ function getAppliances() {
 }
 
 function setAppliances(appl) {
-    device.setAppliances(appl);
+    device.appliances = appl;
+    devfunc.updateTwin('appl');
+
 }
 
 function getConsumption() {

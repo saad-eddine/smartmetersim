@@ -5,7 +5,11 @@ function Device(id, cs) {
   this.id = id;
   this.cs = cs;
   this.key = '';
-  this.appliances = []
+  this.appliances = [];
+  this.location = 'not set';
+  this.fw_version = 'not set';
+  this.connType = 'not set'
+
 }
 
 Device.prototype.getDeviceId = function () {

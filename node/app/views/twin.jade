@@ -11,24 +11,25 @@ block content
                             .col-sm-4
                                 label FW Version
                                 .input-group
+                                    input.form-control(name="fw_version", type='text', placeholder=fw_version)
                                     span.input-group-btn
-                                        button.btn.btn-primary(name="action", type='submit', form='formtwin', value='fw') submit
-                                    input.form-control(name="fw", type='text', placeholder=version)
+                                        button.btn.btn-primary(name="action", type='submit', form='formtwin', value='fw_version') update
                             .col-sm-4
                                 label zip code
                                 .input-group
+                                    input.form-control(name='location', type='text', placeholder=location)
                                     span.input-group-btn
-                                        button.btn.btn-primary(name="action", type='submit', form='formtwin', value='location') submit
-                                    input.form-control(name='zipcode', type='text', placeholder=location)
+                                        button.btn.btn-primary(name="action", type='submit', form='formtwin', value='location') update
                             .col-sm-4
                                 label connectivity type
                                 .input-group
-                                    span.input-group-btn
-                                        button.btn.btn-primary(name="action", type='submit', form='formtwin', value='connType') submit
                                     select#form.form-control(name = "connType")
                                         option(value='') connectivity type
                                         option(value='cellular') cellular
                                         option(value='wifi') wifi
                                         option(value='fixed') fixed 
-   
+                                   
+                                    span.input-group-btn
+                                        button.btn.btn-primary(name="action", type='submit', form='formtwin', value='connType') update
+
       

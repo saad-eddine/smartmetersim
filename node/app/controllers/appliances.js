@@ -72,6 +72,7 @@ router.post('/appliances', function (req, res, next) {
     appliancesArray.push(applObj);
 
     utils.setAppliances(appliancesArray);
+    
     res.render('appreg', {
         title: "smart meter simulator",
         deviceId: utils.getDevice().id,

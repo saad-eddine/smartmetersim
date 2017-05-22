@@ -18,7 +18,6 @@ var clientFromConnectionString = require('azure-iot-device-mqtt').clientFromConn
 var Message = require('azure-iot-device').Message;
 var Client = require('azure-iot-device').Client;
 var Protocol = require('azure-iot-device-mqtt').Mqtt;
-var clientFromConnectionString = require('azure-iot-device-mqtt').clientFromConnectionString;
 
 var deviceKey = '';
 var deviceId = '';

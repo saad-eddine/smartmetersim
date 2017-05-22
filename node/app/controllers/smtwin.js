@@ -3,6 +3,8 @@
 var express = require('express'),
     router = express.Router();
 var utils = require('../lib/utils');
+var devfunc = require('../lib/devfunc');
+
 
 var version = 'not set';
 var location = 'not set';
@@ -16,10 +18,8 @@ router.use(bodyParser.urlencoded({ extended: false }));
 // azure sdk
 var iothub = require('azure-iothub');
 var clientFromConnectionString = require('azure-iot-device-mqtt').clientFromConnectionString;
-var Message = require('azure-iot-device').Message;
 var Client = require('azure-iot-device').Client;
 var Protocol = require('azure-iot-device-mqtt').Mqtt;
-var clientFromConnectionString = require('azure-iot-device-mqtt').clientFromConnectionString;
 
 // routing 
 module.exports = function (app) {
@@ -44,8 +44,8 @@ router.post('/device', function (req, res, next) {
                     console.log('Could not connect: ' + err);
                 } else {
                     // start listeners
-                    client.onDeviceMethod('block', onBlock);
-                    client.onDeviceMethod('release', onRelease);
+                    client.onDeviceMethod('block', devfunc.onBlock);
+                    client.onDeviceMethod('release', devfunc.onRelease);
                 }
             });
             res.render('messaging', {
@@ -81,141 +81,60 @@ router.post('/device', function (req, res, next) {
 
 
 router.get('/twin', function (req, res, next) {
-    res.render('twin', {
-        title: "smart meter simulator",
-        footer: 'ready to manage device properties',
-        deviceId: utils.getDevice().id,
-        location: location,
-        version: version
-    });
+
+    var location = 'not yet set'
+    var version = 'not yet set'
+
+
+    var registry = iothub.Registry.fromConnectionString(utils.getDevice().cs);
+    var query = registry.createQuery("SELECT * FROM devices WHERE deviceId = '" + utils.getDevice().id + '\'', 100);
+    query.nextAsTwin(function (err, prop) {
+        if (err)
+            console.error('Failed to fetch the results: ' + err.message);
+        else {
+            if (prop.length > 0) {
+                location = prop[0].tags.location.zipcode;
+                version = prop[0].properties.reported.fw_version.version;
+            }
+
+        }
+        res.render('twin', {
+            title: "smart meter simulator",
+            footer: 'ready to manage device properties' + utils.getDevice().location + '/ ' + utils.getDevice().fw_version,
+            deviceId: utils.getDevice().id,
+            location: location,
+            fw_version: version
+        });
+    })
+
+
 });
 
 router.post('/twin', function (req, res, next) {
+    device = utils.getDevice();
+
+
+
     switch (req.body.action) {
-        case 'fw':
-            version = req.body.fw;
-            var msg = reportProperty('fw_version', version);
+        case 'fw_version':
+            devfunc.updateTwin('fw_version', req.body.fw_version);
+            device.fw_version = req.body.fw_version;
             break;
         case 'location':
-            location = req.body.zipcode;
-            var msg = reportProperty('location', location);
+            devfunc.updateTwin('location', req.body.location);
+            device.location = req.body.location;
             break;
         case 'connType':
-            var msg = reportProperty('connType', req.body.connType);
+            devfunc.updateTwin('connType', req.body.connType);
+            device.connType = req.body.connType;
             break;
     }
 
     res.render('twin', {
         title: "smart meter simulator",
         deviceId: utils.getDevice().id,
-        footer: msg,
+        footer: 'twin property updated',
         location: location,
         version: version
     });
 });
-
-// direct methods
-var onBlock = function (request, response) {
-    var client = clientFromConnectionString(utils.getDevice().cs);
-    // Respond the cloud app for the direct method
-    response.send(200, 'Electricity supply is now blocked', function (err) {
-        if (!err) {
-            console.error('An error occured when sending a method response:\n' + err.toString());
-        } else {
-            console.log('Response to method \'' + request.methodName + '\' sent successfully.');
-        }
-    });
-
-    // Report the block 
-    var date = new Date();
-    var patch = {
-        iothubDM: {
-            block: {
-                lastBlock: date.toISOString(),
-            }
-        }
-    };
-
-    // Get device Twin
-    client.getTwin(function (err, twin) {
-        if (err) {
-            console.error('could not get twin: ' + JSON.stringify(err));
-        } else {
-            console.log('twin acquired');
-            twin.properties.reported.update(patch, function (err) {
-                if (err) throw err;
-                console.log('Device twin state reported')
-            });
-        }
-    });
-
-    // Block API for physical restart.
-    console.log('Blocking!');
-};
-
-var onRelease = function (request, response) {
-
-    // do something here
-    console.log('releasing...')
-}
-// twin properties
-var reportProperty = function (property, value) {
-    var msg = '';
-    var client = Client.fromConnectionString(devCS, Protocol);
-
-    client.open(function (err) {
-        if (err)
-            msg = 'could not open IotHub client';
-        else {
-            client.getTwin(function (err, twin) {
-                console.log("client successfully opened!")
-
-                if (err) {
-                    msg = 'could not get twin: ' + JSON.stringify(err);
-                    console.log('could not get twin: ' + JSON.stringify(err));
-
-                }
-                else {
-                    switch (property) {
-                        case 'interval':
-                            var patch = {
-                                interval: {
-                                    ms: value
-                                }
-                            };
-                            break;
-                        case 'connType':
-                            var patch = {
-                                connectivity: {
-                                    type: value
-                                }
-                            };
-                            break;
-                        case 'location':
-                            var patch = {
-                                location: {
-                                    zipcode: value
-                                }
-                            };
-                            break;
-                        case 'fw_version':
-                            var patch = {
-                                fw_version: {
-                                    version: value
-                                }
-                            };
-                            break;
-                    }
-
-                    twin.properties.reported.update(patch, function (err) {
-                        if (err)
-                            msg = 'could not update twin: ' + err;
-                        else
-                            msg = 'twin state reported';
-                    });
-                }
-            });
-        }
-        return msg;
-    });
-}
