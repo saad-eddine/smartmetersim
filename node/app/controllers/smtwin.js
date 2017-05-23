@@ -93,8 +93,15 @@ router.get('/twin', function (req, res, next) {
             console.error('Failed to fetch the results: ' + err.message);
         else {
             if (prop.length > 0) {
-                location = prop[0].tags.location.zipcode;
-                version = prop[0].properties.reported.fw_version.version;
+                console.log(prop[0].tags.location)
+                console.log(prop[0].properties.reported)
+                
+                
+                if (prop[0].tags.location !== undefined)
+                    location = prop[0].tags.location.zipcode;
+                if (prop[0].properties.reported.fw_version !== undefined)                    
+                    version = prop[0].properties.reported.fw_version.version;
+                    
             }
 
         }
