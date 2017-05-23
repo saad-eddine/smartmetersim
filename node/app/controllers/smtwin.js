@@ -38,16 +38,14 @@ router.post('/device', function (req, res, next) {
     devCS = 'HostName=' + hubName + ';DeviceId=' + device.id + ';SharedAccessKey=' + device.key;
     switch (req.body.action) {
         case 'activate':
-            var client = clientFromConnectionString(devCS);
-            client.open(function (err) {
-                if (err) {
-                    console.log('Could not connect: ' + err);
-                } else {
-                    // start listeners
-                    client.onDeviceMethod('block', devfunc.onBlock);
-                    client.onDeviceMethod('release', devfunc.onRelease);
-                }
-            });
+            // --------------------------------------
+            // task two:   
+            // register the direct methods defined in
+            // devfunc using the client
+            //---------------------------------------  
+
+            // YOUR CODE GOES HERE        
+
             res.render('messaging', {
                 title: "smart meter simulator",
                 deviceId: utils.getDevice().id,
@@ -85,7 +83,6 @@ router.get('/twin', function (req, res, next) {
     var location = 'not yet set'
     var version = 'not yet set'
 
-
     var registry = iothub.Registry.fromConnectionString(utils.getDevice().cs);
     var query = registry.createQuery("SELECT * FROM devices WHERE deviceId = '" + utils.getDevice().id + '\'', 100);
     query.nextAsTwin(function (err, prop) {
@@ -95,13 +92,13 @@ router.get('/twin', function (req, res, next) {
             if (prop.length > 0) {
                 console.log(prop[0].tags.location)
                 console.log(prop[0].properties.reported)
-                
-                
+
+
                 if (prop[0].tags.location !== undefined)
                     location = prop[0].tags.location.zipcode;
-                if (prop[0].properties.reported.fw_version !== undefined)                    
+                if (prop[0].properties.reported.fw_version !== undefined)
                     version = prop[0].properties.reported.fw_version.version;
-                    
+
             }
 
         }
@@ -119,8 +116,6 @@ router.get('/twin', function (req, res, next) {
 
 router.post('/twin', function (req, res, next) {
     device = utils.getDevice();
-
-
 
     switch (req.body.action) {
         case 'fw_version':

@@ -40,12 +40,6 @@ function printResultFor(op) {
     };
 }
 
-function printDeviceInfo(err, deviceInfo, res) {
-    if (deviceInfo) {
-        deviceKey = deviceInfo.authentication.symmetricKey.primaryKey;
-        utils.setDeviceKey(deviceKey);
-    }
-}
 
 // ROUTING
 module.exports = function (app) {
@@ -66,25 +60,20 @@ router.post('/', function (req, res, next) {
         case 'register':
 
             cs = req.body.cs;
-            var registry = iothub.Registry.fromConnectionString(cs);
-
-            // register device if not already done
-            // then save the device suthentication key
-            var device = new iothub.Device(null);
             deviceId = req.body.devID;
-            device.deviceId = req.body.devID;
-            devCS = req.body.cs;
-
             // populate model
-            utils.setDevice(deviceId, devCS);
+            utils.setDevice(deviceId, cs);
 
-            registry.create(device, function (err, deviceInfo, res) {
-                if (err)
-                    registry.get(device.deviceId, printDeviceInfo);
-                if (deviceInfo)
-                    printDeviceInfo(err, deviceInfo, res);
-            });
-            msg = "device successfully registered with IoT Hub";
+            // -------------------------------------
+            // task one:
+            // register device if not already done
+            // then save the device key in the model
+            // with utils.setDeviceKey(DEVICE KEY)
+            // -------------------------------------
+
+            v// YOUR CODE GOES HERE
+
+            msg = deviceId + " successfully registered with IoT Hub";
             res.render('device', {
                 title: "smart meter simulator",
                 deviceId: deviceId,
@@ -108,15 +97,13 @@ router.get('/msg', function (req, res, next) {
 });
 
 router.post('/msg', function (req, res, next) {
-    //var timer = 10;
-
 
     switch (req.body.action) {
         case 'on':
             var device = utils.getDevice();
             hubName = device.cs.substring(device.cs.indexOf('=') + 1, device.cs.indexOf(';'));
-            devCS = 'HostName=' + hubName + ';DeviceId=' + device.id + ';SharedAccessKey=' + device.key;       
-            
+            var devCS = 'HostName=' + hubName + ';DeviceId=' + device.id + ';SharedAccessKey=' + device.key;
+
             var client = clientFromConnectionString(devCS);
             if (req.body.interval != '')
                 interval = req.body.interval;
@@ -127,20 +114,19 @@ router.post('/msg', function (req, res, next) {
                     msg = 'Could not connect: ' + err;
                 } else {
 
-                    // Create a message and send it to the IoT Hub at interval
                     myTimer = setInterval(function () {
                         var reading = utils.getConsumption();
                         var data = JSON.stringify({ deviceId: deviceId, timestamp: Date.now(), consumption: reading.pwr, appliances: reading.appls });
                         var message = new Message(data);
+                        // --------------------------------------
+                        // task four:
+                        // send the mesage created above to azure
+                        // bonus task:
+                        // only send a message if the reading on
+                        // the meter has changed in case "delta"
+                        // was selected on the UI
+                        // ---------------------------------------
 
-                        if (req.body.msgType == 'delta') {
-                            if (reading != watt) {
-                                client.sendEvent(message, printResultFor('send'));
-                                watt = reading;
-                            } else
-                                console.log('skip mesaging as no changes');
-                        } else
-                            client.sendEvent(message, printResultFor('send'));
                     }, interval);
                 }
             })
