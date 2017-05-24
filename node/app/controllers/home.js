@@ -113,6 +113,10 @@ router.post('/msg', function (req, res, next) {
                 if (err) {
                     msg = 'Could not connect: ' + err;
                 } else {
+                    // -------------------------------------
+                    // bonus task:
+                    // display the last c2d message received
+                    // -------------------------------------
 
                     myTimer = setInterval(function () {
                         var reading = utils.getConsumption();
